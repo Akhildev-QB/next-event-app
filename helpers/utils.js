@@ -1,8 +1,13 @@
-const URL = 'https://my-next-ecom-default-rtdb.firebaseio.com/events.json';
+export const URL =
+  'https://my-next-ecom-default-rtdb.firebaseio.com/events.json';
 
 export const getAllEvents = async () => {
   const response = await fetch(URL);
   const data = await response.json();
+  return transformData(data);
+};
+
+export const transformData = (data) => {
   const events = [];
   for (const key in data) events.push({ id: key, ...data[key] });
   return events;
