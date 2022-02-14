@@ -6,11 +6,17 @@ import ResultsTitle from '../../components/events/ResultsTitle';
 import Button from '../../components/ui/Button';
 import ErrorAlert from '../../components/ui/ErrorAlert';
 import useSWR from 'swr';
+import Head from 'next/head';
 
 const FilteredEventsPage = () => {
   const router = useRouter();
   const [events, setEvents] = useState();
   const { slug: filteredData } = router.query;
+  const HeadComponent = (
+    <Head>
+      <title>Next Event App | Filter</title>
+    </Head>
+  );
 
   const { data, error } = useSWR(URL, (url) =>
     fetch(url).then((res) => res.json())
@@ -36,6 +42,7 @@ const FilteredEventsPage = () => {
   ) {
     return (
       <Fragment>
+        {HeadComponent}
         <ErrorAlert>
           <p>Invalid filter values! Please adjust your values</p>
         </ErrorAlert>
@@ -56,6 +63,7 @@ const FilteredEventsPage = () => {
   if (!filteredEvents || filteredEvents.length === 0) {
     return (
       <Fragment>
+        {HeadComponent}
         <ErrorAlert>
           <p className="center">No events found for this filter</p>
         </ErrorAlert>
@@ -70,6 +78,7 @@ const FilteredEventsPage = () => {
 
   return (
     <Fragment>
+      {HeadComponent}
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </Fragment>

@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import Head from 'next/head';
 import EventContent from '../../components/eventDetail/EventContent';
 import EventSummary from '../../components/eventDetail/EventSummary';
 import EventLogistics from '../../components/eventDetail/EventLogistics';
@@ -7,6 +8,9 @@ import { getEventById, getAllIdParams } from '../../helpers/utils';
 const EventsDetailPage = ({ event }) => {
   return (
     <Fragment>
+      <Head>
+        <title>Next Event App | {event.title}</title>
+      </Head>
       <EventSummary title={event.title} />
       <EventLogistics
         date={event.date}
