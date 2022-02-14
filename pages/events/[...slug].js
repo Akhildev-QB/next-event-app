@@ -1,28 +1,14 @@
-import { useRouter } from 'next/router';
 import { Fragment } from 'react';
-import { getFilteredEvents } from '../../data/dummy-data';
+import { getFilteredEvents } from '../../helpers/utils';
 import EventList from '../../components/events/EventList';
 import ResultsTitle from '../../components/events/ResultsTitle';
 import Button from '../../components/ui/Button';
 import ErrorAlert from '../../components/ui/ErrorAlert';
 
-const FilteredEventsPage = () => {
-  const router = useRouter();
-  const filteredData = router.query.slug;
+const FilteredEventsPage = (props) => {
+  const { events } = props;
 
-  if (!filteredData) return <p className="center">Loading...</p>;
-
-  const year = Number(filteredData[0]);
-  const month = Number(filteredData[1]);
-
-  if (
-    isNaN(year) ||
-    isNaN(month) ||
-    year > 2030 ||
-    year < 2021 ||
-    month > 12 ||
-    month < 1
-  ) {
+  if (props.hasError) {
     return (
       <Fragment>
         <ErrorAlert>
@@ -35,9 +21,7 @@ const FilteredEventsPage = () => {
     );
   }
 
-  const filteredEvents = getFilteredEvents({ year, month });
-
-  if (!filteredEvents || filteredEvents.length === 0) {
+  if (!events || events.length === 0) {
     return (
       <Fragment>
         <ErrorAlert>
@@ -50,14 +34,35 @@ const FilteredEventsPage = () => {
     );
   }
 
-  const date = new Date(year, month - 1);
+  const date = new Date(props.year, props.month - 1);
 
   return (
     <Fragment>
       <ResultsTitle date={date} />
-      <EventList items={filteredEvents} />
+      <EventList items={events} />
     </Fragment>
   );
+};
+
+export const getServerSideProps = async (context) => {
+  const { slug: filteredData } = context.params;
+
+  const year = Number(filteredData[0]);
+  const month = Number(filteredData[1]);
+
+  if (
+    isNaN(year) ||
+    isNaN(month) ||
+    year > 2030 ||
+    year < 2021 ||
+    month > 12 ||
+    month < 1
+  ) {
+    return { hasError: true };
+  }
+
+  const events = await getFilteredEvents({ year, month });
+  return { props: { events, year, month } };
 };
 
 export default FilteredEventsPage;
